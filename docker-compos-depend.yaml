@@ -1,0 +1,41 @@
+version: '3'
+services:
+
+  otp:
+    build:
+      context: ./otp/1.5.0
+      dockerfile: ./Dockerfile
+    volumes:
+    - ./otp/data:/app/graphs
+
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/otp/routers/default"]
+    #   interval: 10s       # Check every #s seconds (minimum is 1s)
+    #   timeout: 10s        # Fail if it takes more than #s second to respond
+    #   retries: 3          # Only try # before marking as unhealthy
+    #   start_period: 30s   # No initial delay before healthchecks start
+
+  photon:
+    build:
+      context: ./photon/0.5.0
+      dockerfile: ./Dockerfile
+    volumes:
+    - ./photon/data:/app/photon_data
+    depends_on:
+      otp:
+        # condition: service_healthy
+        condition: service_started
+      
+  nginx:
+    image: nginx:1.15-alpine
+    volumes:
+    - ./nginx-legacy/dev/:/etc/nginx/conf.d
+    ports:
+    - 8080:80
+    depends_on:
+      photon:
+        condition: service_started
+
+networks:
+  default:
+    name: trufi-server

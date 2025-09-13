@@ -1,0 +1,1 @@
+sudo docker inspect -f '{{.Name}}{{range  $n, $v := .NetworkSettings.Networks}} | {{$n}} {{$v.IPAddress}} {{$v.MacAddress}}{{end}}' $(sudo docker ps -aq);

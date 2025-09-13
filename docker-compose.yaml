@@ -1,0 +1,23 @@
+services:
+
+  otp:
+    build:
+      context: ./otp/1.5.0
+      dockerfile: ./Dockerfile
+    volumes:
+    - ./otp/data:/app/graphs
+
+  photon:
+    build:
+      context: ./photon/0.5.0
+      dockerfile: ./Dockerfile
+    volumes:
+    - ./photon/data:/app/photon_data
+      
+  nginx:
+    image: nginx:1.15-alpine
+    volumes:
+    - ./nginx-legacy/dev/:/etc/nginx/conf.d
+    ports:
+    - 80:80
+    # - 8080:80
